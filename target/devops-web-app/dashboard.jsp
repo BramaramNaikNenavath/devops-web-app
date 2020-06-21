@@ -9,7 +9,7 @@
 <body>
 	<div style="text-align: center">
 		<h1>Welcome to Users Admin Panel</h1>
-		<a href="login">Logout</a>
+		<a href="/">Logout</a>
 	</div>
 </body>
 </html>
