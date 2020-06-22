@@ -15,11 +15,9 @@ pipeline {
         
        stage("build & SonarQube analysis") {
            def mvnHome = tool name : 'localMaven', type : 'maven'
-          node {
-              withSonarQubeEnv('SonarQube') {
+         withSonarQubeEnv('SonarQube') {
                   sh '${mvnHome}/bin/mvn sonar:sonar'
-              }    
-          }
+              } 
       }
       
       stage("Quality Gate"){
