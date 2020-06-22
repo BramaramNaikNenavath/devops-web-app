@@ -12,13 +12,11 @@ pipeline {
                 }
             }
         }
-        node {
-  		  	stage('build & SonarQube Scan') {
-    			withSonarQubeEnv('My SonarQube Server') {
-      				build job: 'Devops Webapp Sonar build'
-    			} // SonarQube taskId is automatically attached to the pipeline context
-  			}
-		}
+        stage('build & SonarQube Scan') {
+			withSonarQubeEnv('My SonarQube Server') {
+  				build job: 'Devops Webapp Sonar build'
+			} // SonarQube taskId is automatically attached to the pipeline context
+  		}
  
 		// No need to occupy a node
 		stage("Quality Gate") {
