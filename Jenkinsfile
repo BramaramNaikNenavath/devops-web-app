@@ -12,6 +12,11 @@ pipeline {
                 }
             }
         }
+        stage('SonarQube Code review'){
+        	steps {
+       			build job: 'Devops Webapp Sonar build'
+        	}
+        }
         stage('Deploy in Staging Environment'){
             steps{
                 build job: 'Deploy Application to STAGING'
