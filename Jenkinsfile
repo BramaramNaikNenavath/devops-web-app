@@ -12,18 +12,19 @@ pipeline {
                 }
             }
         }
-        stage('SonarQube Code review'){
-        	steps {
-       			build job: 'Devops Webapp Sonar build'
-        	}
-        }
-        stage("Quality Gate") {
-      steps {
-        timeout(time: 1, unit: 'HOURS') {
-          waitForQualityGate abortPipeline: true
-        }
+        
+       stage ("SonarQube analysis") {
+   steps {
+      withSonarQubeEnv('SonarQube') {
+         build job: 'Devops Webapp Sonar build'
       }
-    }
+
+      def qualitygate = waitForQualityGate()
+      if (qualitygate.status != "OK") {
+         error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
+      }
+   }
+}
         
         stage('Deploy in Staging Environment'){
             steps{
