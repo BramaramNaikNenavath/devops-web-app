@@ -15,8 +15,7 @@ pipeline {
         stage('SonarQube Code review'){
         	steps {
        			build job: 'Devops Webapp Sonar build'
-        	}
-        	script {
+       			script {
         		timeout(time: 1, unit: 'HOURS') { 
 	           		def qg = waitForQualityGate() 
 	           		if (qg.status != 'OK') {
@@ -26,7 +25,7 @@ pipeline {
 	           		}
         		}
         	}
-        	
+        	}
         }
         stage('Deploy in Staging Environment'){
             steps{
