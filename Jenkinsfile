@@ -13,18 +13,23 @@ pipeline {
             }
         }
         
-       stage ("SonarQube analysis") {
-   steps {
-      withSonarQubeEnv('SonarQube') {
-         build job: 'Devops Webapp Sonar build'
+       stage("build & SonarQube analysis") {
+           def mvnHome = tool name : 'localMaven', type : 'maven'
+          node {
+              withSonarQubeEnv('SonarQube') {
+                  sh '${mvnHome}/bin/mvn sonar:sonar'
+              }    
+          }
       }
-
-      def qualitygate = waitForQualityGate()
-      if (qualitygate.status != "OK") {
-         error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
+      
+      stage("Quality Gate"){
+          timeout(time: 1, unit: 'HOURS') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
+              }
+          }
       }
-   }
-}
         
         stage('Deploy in Staging Environment'){
             steps{
