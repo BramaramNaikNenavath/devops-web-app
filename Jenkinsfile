@@ -17,6 +17,14 @@ pipeline {
        			build job: 'Devops Webapp Sonar build'
         	}
         }
+        stage("Quality Gate") {
+      steps {
+        timeout(time: 1, unit: 'HOURS') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+        
         stage('Deploy in Staging Environment'){
             steps{
                 build job: 'Deploy Application to STAGING'
