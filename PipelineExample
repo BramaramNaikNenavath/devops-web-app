@@ -1,0 +1,57 @@
+node {
+  stage('SCM') {
+    git 'https://github.com/BramaramNaikNenavath/devops-dao.git'
+  }
+  stage('DAO SonarQube analysis') {
+    withSonarQubeEnv('SonarQube') {
+      sh 'mvn clean package sonar:sonar'
+    } // submitted SonarQube taskId is automatically attached to the pipeline context
+  }
+  // No need to occupy a node
+stage("DAO Quality Gate"){
+  timeout(time: 1, unit: 'MINUTES') { // Just in case something goes wrong, pipeline will be killed after a timeout
+    def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+    if (qg.status != 'OK') {
+      error "Pipeline aborted due to quality gate failure: ${qg.status}"
+    }
+  }
+}
+stage('Package DAO') {
+            def mvnHome = tool name : 'localMaven', type : 'maven'
+            sh "${mvnHome}/bin/mvn package"
+        }
+        
+stage('SCM') {
+    git 'https://github.com/BramaramNaikNenavath/devops-web-app.git'
+  }
+  stage('Web SonarQube analysis') {
+    withSonarQubeEnv('SonarQube') {
+      sh 'mvn clean package sonar:sonar'
+    } // submitted SonarQube taskId is automatically attached to the pipeline context
+  }
+  // No need to occupy a node
+stage("Web Quality Gate"){
+  timeout(time: 1, unit: 'MINUTES') { // Just in case something goes wrong, pipeline will be killed after a timeout
+    def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+    if (qg.status != 'OK') {
+      error "Pipeline aborted due to quality gate failure: ${qg.status}"
+    }
+  }
+}
+stage('Approval'){
+    echo 'Approved for Deployment'
+}
+    stage('Package WebApp') {
+        def mvnHome = tool name : 'localMaven', type : 'maven'
+        sh "${mvnHome}/bin/mvn package"
+    }
+    stage('Deploy to Staging'){
+        build 'Deploy Application to STAGING'
+    }
+    stage('Deploy to Production'){
+        build 'Deploy Application to PROD'
+    }
+    stage("Email Notification"){
+        echo 'Email sent to Developers for testing'
+    }
+}
