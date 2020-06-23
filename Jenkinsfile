@@ -1,11 +1,12 @@
 pipeline {
     agent any
     stages {
-        stage('Cleaning and Building DAO Module ....') {
+        stage('DAO Module') {
             steps{
                 build job: 'Package Devops DAO'
             }
         }
+        
         stage('Packaging Devops DAO module and Webapp') {
             steps{
                 build job: 'Package Devops Web App'
